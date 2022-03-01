@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+
+.player-wrap {
+    position: relative
+}
+
+.player-wrap audio {
+    display: none;
+}
+
+.player.playing .time-indicator {
+    opacity: 1;
+}
+.player {
+	margin-top: 50px;
+	position: relative;
+    padding-left: 40px;
+}
+
+.player__play-button {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+	cursor: pointer;
+}
+
+.player__play-button img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: .2s;
+}
+
+.paused .player__play-button img:first-child {
+    opacity: 1;
+}
+
+.playing .player__play-button img:last-child {
+    opacity: 1;
+}
+
+
+body .player .time-indicator {
+	position: absolute;
+	right: -15px;
+	top: -20px;
+    color: #1C273B;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 18px;
+    opacity: 0;
+    transition: .3s;
+}
+
+body .player .progress-bar {
+	width: 100%;
+    height: 30px;
+	cursor: pointer;
+    background: url(icons/wave.svg) repeat-x;
+}
+
+body .player .progress-bar .runner {
+    width: 0;
+	height: 30px;
+    position: relative;
+    background: url(icons/wave-color.svg) repeat-x;
+}
+body .player.paused {
+	border-bottom: none;
+}
+
+body .player.playing .progress-bar {
+	margin: 0;
+	opacity: 1;
+}
+    </style>
+</head>
+<body>
+    
+    <div class="player-wrap">
+        <audio src="https://www.buzzsprout.com/231452/3483301-magic-mastering-jj-from-goodpods-stops-by.mp3" controls></audio>
+        <div class="player paused">
+            <div class="progress-bar">
+              <div class="runner">
+                <div class="time-indicator">
+                    <span class="time"></span>
+                  </div>
+              </div>
+            </div>
+            <div class="play-button player__play-button">
+                <img src="icons/play-btn.svg" alt="">   
+                <img src="icons/pause-btn.svg" alt="">                                      
+            </div>
+        </div>
+    </div>
+<script>
+    const payerWraps = document.querySelectorAll('.player-wrap');
+    payerWraps.forEach((item) => {
+        let audio = item.querySelector('audio');
+        let progressBar = item.querySelector('.progress-bar');
+        let progressBarRunner = progressBar.querySelector('.runner');
+        let percentage = 0;
+        let time = item.querySelector('.time');
+        let $player = item.querySelector('.player');
+        let playBtn = item.querySelector('.play-button');
+
+        let playRunner = null;
+
+        function go() {
+            playRunner = setInterval(function() {
+                let duration = audio.duration;
+                //progress bar
+                percentage += 100 / duration / 10;
+                if (percentage > 100) percentage = 0;
+                progressBarRunner.style.width = percentage + '%';
+                time.innerText = calculateTime(duration, percentage);
+            }, 100);
+        };
+
+        playBtn.addEventListener('click', function() {
+            $player.classList.toggle('paused')
+            $player.classList.toggle('playing');
+            if (playRunner) {
+                clearInterval(playRunner);
+                audio.pause();
+                playRunner = null;
+                time.innerText = calculateTime(audio.duration, percentage);
+            } else {
+                audio.play();
+                // percentage = 0;
+                go();
+            }
+        });
+
+        progressBar.addEventListener('click', function(e) {
+            let duration = audio.duration;
+            let posY = this.offsetLeft;
+            let clickY = e.pageX - posY;
+            let width = this.offsetWidth;
+            console.log(posY, e.pageX, width);
+            percentage = clickY / width * 100;
+            progressBarRunner.style.width = percentage + '%';
+            audio.currentTime = (duration / 100 * percentage);
+        });
+
+        function calculateTime(songLength, percentage) {
+            //time
+            let currentLength = songLength / 100 * percentage;
+            let minutes = Math.floor(currentLength / 60);
+            let seconds = Math.floor(currentLength - (minutes * 60));
+            if (seconds <= 9) {
+                return (minutes + ':0' + seconds);
+            } else {
+                return (minutes + ':' + seconds);
+            }
+        }
+
+        clearInterval(playRunner);
+    })
+</script>
+</body>
+</html>
