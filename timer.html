@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+    <div class="banner-timer">
+        <div class="banner-timer__heading">До конца акции осталось:</div>
+        <div id="timer" class="banner-timer__timer">
+            <span id="timer-days"></span>
+            <span id="timer-hours"></span>
+            <span id="timer-mins"></span>
+            <span id="timer-secs"></span>
+        </div>
+        <div class="banner-timer__img">
+            <img src="assets/images/banner-timer.jpg" alt="">
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+function initBannerTimer(date) {
+    var endDate = new Date(date).getTime();
+    getDate();
+    var timer = setInterval(() => getDate(), 1000);
+    function getDate() {
+        let now = new Date().getTime();
+        let t = endDate - now;
+
+        if (t >= 0) {
+
+            let days = Math.floor(t / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let mins = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+            let secs = Math.floor((t % (1000 * 60)) / 1000);
+
+            document.getElementById("timer-days").innerHTML = `
+            ${days}<span class="label">${(days == 1 || (days > 19 && days % 10 == 1)) ? 'день' : ((days > 1 && days < 5) || (days > 19 && days % 10 > 1 && days % 10 < 5)) ? 'дня' : 'дней'}</span>`;
+
+            document.getElementById("timer-hours").innerHTML = `
+            ${("0"+hours).slice(-2)}<span class='label'>${(hours == 1 || (hours > 19 && hours % 10 == 1)) ? 'час' : ((hours > 1 && hours < 5) || (hours > 19 && hours % 10 > 1 && hours % 10 < 5)) ? 'часа' : 'часов'}</span>`;
+
+            document.getElementById("timer-mins").innerHTML = `
+            ${("0"+mins).slice(-2)}<span class='label'>${(mins == 1 || (mins > 19 && mins % 10 == 1)) ? 'минута' : ((mins > 1 && mins < 5) || (mins > 19 && mins % 10 > 1 && mins % 10 < 5)) ? 'минуты' : 'минут'}</span>`
+
+        } else {
+            document.getElementById("timer").innerHTML = "Акция закончилась";
+        }
+    }
+}
+
+initBannerTimer("Oct 25, 2023 12:00:00");
+
+</script>
+<style>
+.banner-timer {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    background: #ed912e;
+    padding-top: 10px;
+    color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.banner-timer__timer {
+    font-size: 24px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.banner-timer__heading {
+    margin-bottom: 5px;
+}
+.banner-timer__img img {
+    max-width: 100%;
+    display: block;
+}
+.label {
+    font-size: 1.4rem;
+    padding-left: 0.25rem;
+}
+</style>
+</html>
